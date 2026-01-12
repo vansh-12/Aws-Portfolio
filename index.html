@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vansh Kesari | Cloud Engineer & Developer</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #00d2ff;
+            --secondary: #3a7bd5;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-light: #ffffff;
+            --text-dim: #cccccc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: #0f0f0f;
+            color: var(--text-light);
+            overflow-x: hidden;
+        }
+
+        /* --- 3D Canvas Background --- */
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #000000 100%);
+        }
+
+        /* --- Layout & Glassmorphism --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 210, 255, 0.15);
+            border-color: var(--primary);
+        }
+
+        /* --- Header --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        nav a {
+            color: var(--text-light);
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+        }
+
+        .hero h2 {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero p {
+            max-width: 600px;
+            color: var(--text-dim);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.6);
+        }
+
+        /* --- Section Titles --- */
+        .section-title {
+            font-size: 2.5rem;
+            margin: 4rem 0 2rem;
+            text-align: center;
+        }
+
+        .highlight {
+            color: var(--primary);
+        }
+
+        /* --- Skills Grid --- */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .skill-item {
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .skill-item i {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        /* --- Experience Timeline --- */
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .job-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .job-company {
+            color: var(--primary);
+        }
+
+        .job-details li {
+            list-style-position: inside;
+            color: var(--text-dim);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* --- Projects --- */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .tech-stack {
+            margin-top: 1rem;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: rgba(0, 210, 255, 0.2);
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        /* --- Contact --- */
+        .contact-container {
+            text-align: center;
+            margin: 4rem 0;
+        }
+
+        .social-links {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .social-links a {
+            color: white;
+            font-size: 2rem;
+            transition: 0.3s;
+        }
+
+        .social-links a:hover {
+            color: var(--primary);
+            transform: scale(1.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .hero h2 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="canvas-container"></div>
+
+    <div class="container">
+        <header>
+            <div class="logo">VANSH KESARI</div>
+            <nav>
+                <a href="#skills">Skills</a>
+                <a href="#experience">Experience</a>
+                <a href="#projects">Projects</a>
+                <a href="#contact">Contact</a>
+            </nav>
+        </header>
+
+        <section class="hero">
+            <h3>Hello, I am</h3>
+            <h1>Vansh Kesari</h1>
+            <h2>Cloud Engineer & Full Stack Dev</h2>
+            <p>
+                2 years of experience in Cloud Operations, Linux Administration, and Monitoring. 
+                Expertise in Azure, AWS, and MERN Stack development.
+            </p>
+            <div style="display: flex; gap: 15px;">
+                <a href="https://linkedin.com/in/vansh-kesari-1915b564" class="btn" target="_blank">LinkedIn</a>
+                <a href="https://github.com/vansh-12" class="btn" style="background: transparent; border: 1px solid var(--primary);">GitHub</a>
+            </div>
+        </section>
+
+        <h2 class="section-title" id="skills">Technical <span class="highlight">Skills</span></h2>
+        <div class="skills-grid">
+            <div class="glass-card skill-item">
+                <i class="fab fa-microsoft"></i>
+                <p>Azure (AZ-900)</p>
+            </div>
+            <div class="glass-card skill-item">
+                <i class="fab fa-aws"></i>
+                <p>AWS (CLF-C02)</p>
+            </div>
+            <div class="glass-card skill-item">
+                <i class="fab fa-linux"></i>
+                <p>Linux Admin</p>
+            </div>
+            <div class="glass-card skill-item">
+                <i class="fab fa-react"></i>
+                <p>MERN Stack</p>
+            </div>
+            <div class="glass-card skill-item">
+                <i class="fab fa-docker"></i>
+                <p>DevOps/Docker</p>
+            </div>
+            <div class="glass-card skill-item">
+                <i class="fab fa-java"></i>
+                <p>Java / Spring</p>
+            </div>
+        </div>
+
+        <h2 class="section-title" id="experience">Work <span class="highlight">Experience</span></h2>
+        <div class="timeline">
+            <div class="glass-card">
+                <div class="job-header">
+                    <div>
+                        <div class="job-title">Cloud Engineer</div>
+                        <div class="job-company">Tech Mahindra (Dubai Holding Prj.)</div>
+                    </div>
+                    <div>July 2024 - Present</div>
+                </div>
+                <ul class="job-details">
+                    <li>Maintained 99.9% system uptime by actively monitoring infrastructure in a 24/7 environment.</li>
+                    <li>Reduced Mean Time to Resolution by efficiently triaging critical alerts.</li>
+                    <li>Managed Active Directory, Group Policy, and user role configurations.</li>
+                    <li>Performed daily Linux Administration including log analysis and access controls.</li>
+                </ul>
+            </div>
+
+            <div class="glass-card">
+                <div class="job-header">
+                    <div>
+                        <div class="job-title">Java Developer</div>
+                        <div class="job-company">Tech Mahindra (Mahindra Finance)</div>
+                    </div>
+                    <div>Dec 2023 - June 2024</div>
+                </div>
+                <ul class="job-details">
+                    <li>Worked on a loan lending application for vehicles using microservices.</li>
+                    <li>Built APIs for inter-service communication and feature enhancements.</li>
+                    <li>Diagnosed and resolved Server Backup issues and health checks.</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2 class="section-title" id="projects">Featured <span class="highlight">Projects</span></h2>
+        <div class="projects-grid">
+            <div class="glass-card">
+                <h3>Food Application</h3>
+                <p style="margin-top: 10px; color: var(--text-dim);">
+                    Implemented user operations and planned menus using MVC Architecture. Integrated Express and Mongoose for backend operations.
+                </p>
+                <div class="tech-stack">
+                    <span class="tag">Node.js</span>
+                    <span class="tag">Express</span>
+                    <span class="tag">MongoDB</span>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <h3>Insta Reels Clone</h3>
+                <p style="margin-top: 10px; color: var(--text-dim);">
+                    Developed a web-based clone with React and Firebase. Integrated Intersection Observer API for auto-play features.
+                </p>
+                <div class="tech-stack">
+                    <span class="tag">React.js</span>
+                    <span class="tag">Firebase</span>
+                    <span class="tag">API</span>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title" id="contact">Get In <span class="highlight">Touch</span></h2>
+        <div class="glass-card contact-container">
+            <p>Currently open to contributing by leveraging hands-on IT operations and full-stack development.</p>
+            <p style="margin-top: 1rem; font-size: 1.2rem;"><strong>Vanshkesari.12@gmail.com</strong></p>
+            
+            <div class="social-links">
+                <a href="https://linkedin.com/in/vansh-kesari-1915b564" target="_blank"><i class="fab fa-linkedin"></i></a>
+                <a href="https://github.com/vansh-12" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="mailto:Vanshkesari.12@gmail.com"><i class="fas fa-envelope"></i></a>
+            </div>
+        </div>
+
+        <footer style="text-align: center; padding: 20px; color: var(--text-dim); font-size: 0.8rem;">
+            &copy; 2025 Vansh Kesari. Built with Three.js
+        </footer>
+    </div>
+
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // Create Particles for "Cloud/Network" effect
+        const geometry = new THREE.BufferGeometry();
+        const particlesCount = 1200;
+        const posArray = new Float32Array(particlesCount * 3);
+
+        for(let i = 0; i < particlesCount * 3; i++) {
+            // Spread particles across a wide area
+            posArray[i] = (Math.random() - 0.5) * 15;
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+        const material = new THREE.PointsMaterial({
+            size: 0.03,
+            color: 0x00d2ff, // Matches your primary color
+            transparent: true,
+            opacity: 0.8
+        });
+
+        const particlesMesh = new THREE.Points(geometry, material);
+        scene.add(particlesMesh);
+
+        camera.position.z = 4;
+
+        // Mouse Interaction
+        let mouseX = 0;
+        let mouseY = 0;
+        let targetX = 0;
+        let targetY = 0;
+
+        const windowHalfX = window.innerWidth / 2;
+        const windowHalfY = window.innerHeight / 2;
+
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX - windowHalfX);
+            mouseY = (event.clientY - windowHalfY);
+        });
+
+        // Animation Loop
+        const clock = new THREE.Clock();
+
+        const animate = () => {
+            targetX = mouseX * 0.001;
+            targetY = mouseY * 0.001;
+
+            const elapsedTime = clock.getElapsedTime();
+
+            // Rotate entire mesh slowly
+            particlesMesh.rotation.y = .1 * elapsedTime;
+
+            // React to mouse
+            particlesMesh.rotation.y += 0.5 * (targetX - particlesMesh.rotation.y);
+            particlesMesh.rotation.x += 0.05 * (targetY - particlesMesh.rotation.x);
+
+            // Gentle wave effect on particles (optional complexity)
+            // Can add more complex shader logic here for "breathing" cloud
+
+            renderer.render(scene, camera);
+            window.requestAnimationFrame(animate);
+        };
+
+        animate();
+
+        // Handle Resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
